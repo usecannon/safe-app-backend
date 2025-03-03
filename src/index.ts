@@ -99,6 +99,18 @@ async function start() {
   app.use(express.json());
   app.use(helmet());
 
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    
+    if (req.method === 'OPTIONS') {
+      return res.status(200).end();
+    }
+    
+    next();
+  });
+
   app.get('/favicon.ico', (req, res) => res.status(204));
 
   app.use(
@@ -110,13 +122,6 @@ async function start() {
       validate: { trustProxy: !!process.env.TRUST_PROXY },
     })
   );
-
-  app.use((_req, res, next) => {
-    res.appendHeader('Access-Control-Allow-Origin', '*');
-    res.appendHeader('Access-Control-Allow-Methods', '*');
-    res.appendHeader('Access-Control-Allow-Headers', '*');
-    next();
-  });
 
   function parseSafeParams(params: { chainId: string; safeAddress: string }) {
     const chainId = Number.parseInt(params.chainId);
