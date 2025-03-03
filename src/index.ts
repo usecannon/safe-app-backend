@@ -118,6 +118,11 @@ async function start() {
     next();
   });
 
+  // Handle preflight requests
+  app.options('*', (req, res) => {
+    res.status(200).end();
+  }); 
+
   function parseSafeParams(params: { chainId: string; safeAddress: string }) {
     const chainId = Number.parseInt(params.chainId);
     if (!Number.isSafeInteger(chainId) || chainId < 1) return {};
